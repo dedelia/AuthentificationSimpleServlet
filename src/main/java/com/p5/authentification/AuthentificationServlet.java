@@ -16,7 +16,7 @@ public class AuthentificationServlet extends HttpServlet {
     public void init() throws ServletException
     {
         // Do required initialization
-        message = "Hello World";
+        message = "";
     }
 
     public void doGet(HttpServletRequest request,
@@ -28,7 +28,17 @@ public class AuthentificationServlet extends HttpServlet {
 
         // Actual logic goes here.
         PrintWriter out = response.getWriter();
-        out.println("<h1>" + message + "</h1>");
+        out.println("<h1> \"Hello World [GET]\"</h1>");
+    }
+
+    public void doPost(HttpServletRequest request,
+                       HttpServletResponse response)  throws ServletException, IOException {
+        // Set response content type
+        response.setContentType("text/html");
+
+        // Actual logic goes here.
+        PrintWriter out = response.getWriter();
+        out.println("<h1> \"Hello World [POST]\"</h1>");
     }
 
     public void destroy()

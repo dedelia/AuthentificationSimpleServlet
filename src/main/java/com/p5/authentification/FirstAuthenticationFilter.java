@@ -10,14 +10,12 @@ import java.util.Map;
 /**
  * Created by dtristu on 29.11.2016.
  */
-public class AuthenticationFilter implements Filter {
+public class FirstAuthenticationFilter implements Filter {
 
-    Map<String,String> tokens = new HashMap<String, String>();
+    Map<String, String> tokens = new HashMap<String, String>();
 
     public void init(FilterConfig filterConfig) throws ServletException {
-        tokens.put("token1","user1");
-        tokens.put("token2","user2");
-        tokens.put("token3","user3");
+        tokens.put("0001", "user1");
     }
 
 
@@ -27,11 +25,23 @@ public class AuthenticationFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         String authHeader = request.getHeader("token");
-        if (authHeader != null && tokens.containsKey(authHeader)) {
-            filterChain.doFilter(servletRequest, servletResponse);
+
+        if (authHeader != null) {
+            String chunk = authHeader.substring(0, authHeader.indexOf(":"));
+
+            if (tokens.containsKey(chunk)) {
+
+                chunk = authHeader.substring(authHeader.indexOf(":") + 1, authHeader.length());
+                filterChain.doFilter(request, response);
+
+            } else {
+                unauthorized((HttpServletResponse) servletResponse);
+            }
         } else {
-            unauthorized(response);
+            unauthorizedHeader((HttpServletResponse) servletResponse);
         }
+
+
     }
 
     public void destroy() {
@@ -40,5 +50,9 @@ public class AuthenticationFilter implements Filter {
 
     private void unauthorized(HttpServletResponse response) throws IOException {
         response.sendError(401, "Unauthorized");
+    }
+
+    private void unauthorizedHeader(HttpServletResponse response) throws IOException {
+        response.sendError(401, "Header missing");
     }
 }
